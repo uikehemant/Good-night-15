@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>शुभ रात्रि!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #1a2a4b, #0a152d); /* रात के प्रभाव के लिए गहरा नीला ग्रेडिएंट */
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+            overflow: hidden; /* फायरवर्क के लिए ओवरफ्लो छिपाएं */
+            position: relative;
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            z-index: 10; /* कंटेनर को फायरवर्क के ऊपर सुनिश्चित करें */
+        }
+
+        h1 {
+            color: #ffe680; /* सुनहरे चाँद का रंग */
+            font-size: 2.8em;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            font-size: 1.4em;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .sender-name {
+            font-weight: bold;
+            color: #a0d8ff; /* भेजने वाले के नाम के लिए हल्का नीला */
+            font-size: 1.3em;
+            margin-top: 15px;
+        }
+
+        .name-input-section {
+            margin-top: 30px;
+        }
+
+        .name-input {
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+
+        .share-whatsapp-button {
+            background-color: #25D366; /* WhatsApp हरा */
+            color: white;
+            padding: 14px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px auto;
+        }
+
+        .share-whatsapp-button:hover {
+            background-color: #1DA851;
+        }
+
+        .share-whatsapp-button i {
+            margin-right: 8px;
+            font-size: 1.4em;
+        }
+
+        .link-display {
+            margin-top: 20px;
+            font-size: 1.1em;
+            word-break: break-all;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px dashed #ffffff;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .link-display.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* फायरवर्क स्टाइल */
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background-color: #fff;
+            border-radius: 50%;
+            opacity: 0;
+            animation: firework-launch 1s forwards, firework-explode 0.8s 1s forwards;
+            z-index: 5;
+        }
+
+        .firework-particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background-color: #fff;
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        @keyframes firework-launch {
+            0% {
+                opacity: 1;
+                transform: scale(0.5) translateY(0);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(-100vh);
+            }
+        }
+
+        @keyframes firework-explode {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(3);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GOOD NIGHT 🌙</h1>
+        <div class="message">
+            <p>"रात की चांदनी से नूर मिले आपको,</p>
+            <p>ठंडी हवाओं से सुकून मिले आपको,</p>
+            <p>जो भी चाहें दिल से आप,</p>
+            <p>वो हर दुआ में मंज़ूर हो आपको।</p>
+            <p>शुभ रात्रि।"</p>
+        </div>
+
+        <p class="sender-name" id="displaySenderName"></p>
+
+        <div class="name-input-section">
+            <input type="text" id="yourName" class="name-input" placeholder="यहां अपना नाम लिखें">
+            <button class="share-whatsapp-button" onclick="generateAndShareLink()">
+                <i class="fab fa-whatsapp"></i> लिंक शेयर करें
+            </button>
+        </div>
+
+        <div class="link-display" id="generatedLink">
+            <p>आपकी शुभकामना लिंक:</p>
+            <p id="linkText"></p>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const sender = urlParams.get('sender');
+        const displaySenderName = document.getElementById('displaySenderName');
+        const yourNameInput = document.getElementById('yourName');
+        const generatedLinkDiv = document.getElementById('generatedLink');
+        const linkText = document.getElementById('linkText');
+
+        // अगर URL में 'sender' पैरामीटर है, तो भेजने वाले का नाम दिखाएं
+        if (sender) {
+            displaySenderName.textContent = `(${decodeURIComponent(sender)} की ओर से)`;
+            // प्राप्तकर्ता के लिए अपना नाम लिखने का विकल्प रखें
+            yourNameInput.placeholder = 'यहां अपना नाम लिखें'; 
+        } else {
+            displaySenderName.textContent = ''; // अगर कोई भेजने वाला नहीं है तो इसे छिपा दें
+        }
+
+        function generateAndShareLink() {
+            const name = yourNameInput.value.trim();
+            // वर्तमान पेज का URL प्राप्त करें
+            let baseUrl = window.location.origin + window.location.pathname; 
+
+            if (name) {
+                // नाम के साथ एक नया लिंक बनाएं
+                const shareLink = `${baseUrl}?sender=${encodeURIComponent(name)}`;
+                linkText.textContent = shareLink;
+                generatedLinkDiv.classList.add('visible');
+
+                // WhatsApp पर साझा करने के लिए
+                const whatsappMessage = `आपको शुभ रात्रि! ${encodeURIComponent(name)} की ओर से यह प्यारा संदेश: ${shareLink}`;
+                const whatsappUrl = `https://wa.me/?text=${whatsappMessage}`;
+                window.open(whatsappUrl, '_blank'); // नए टैब में WhatsApp खोलें
+
+            } else {
+                alert("कृपया लिंक साझा करने से पहले अपना नाम दर्ज करें!");
+            }
+        }
+
+        // फायरवर्क एनिमेशन
+        function createFirework() {
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            document.body.appendChild(firework);
+
+            const startX = Math.random() * window.innerWidth;
+            const startY = window.innerHeight; // नीचे से शुरू करें
+            firework.style.left = `${startX}px`;
+            firework.style.top = `${startY}px`;
+
+            // फायरवर्क के लिए विभिन्न रंग
+            const colors = ['#FFD700', '#FF4500', '#ADFF2F', '#00BFFF', '#EE82EE', '#FFFFFF', '#FF69B4', '#00FFFF', '#FF00FF'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            firework.style.backgroundColor = randomColor;
+
+            // लॉन्च एनिमेशन
+            firework.animate([
+                { transform: `translateY(0)`, opacity: 1 },
+                { transform: `translateY(-${startY * (0.5 + Math.random() * 0.5)}px)`, opacity: 1 } // ऊपर की ओर जाएं
+            ], {
+                duration: 1000 + Math.random() * 500, // अवधि में थोड़ी भिन्नता
+                easing: 'ease-out',
+                fill: 'forwards'
+            }).onfinish = () => {
+                // लॉन्च के बाद विस्फोट
+                firework.style.animation = 'none'; // लॉन्च एनिमेशन रोकें
+                firework.style.opacity = 0; // मुख्य फायरवर्क सर्कल को छिपाएं
+
+                // कण बनाएं
+                const numParticles = 90 + Math.random() * 60; // कणों की संख्या 3 गुना बढ़ा दी गई है (पहले 30-40 थी)
+                for (let i = 0; i < numParticles; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'firework-particle';
+                    particle.style.backgroundColor = randomColor; // कणों के लिए मुख्य फायरवर्क का रंग
+                    particle.style.left = `${firework.offsetLeft}px`;
+                    particle.style.top = `${firework.offsetTop}px`;
+                    document.body.appendChild(particle);
+
+                    const angle = Math.random() * Math.PI * 2; // 360 डिग्री का कोण
+                    const distance = 80 + Math.random() * 120; // विस्फोट की दूरी बढ़ा दी गई है
+                    const targetX = firework.offsetLeft + distance * Math.cos(angle);
+                    const targetY = firework.offsetTop + distance * Math.sin(angle);
+
+                    particle.animate([
+                        { transform: `translate(0, 0)`, opacity: 1 },
+                        { transform: `translate(${targetX - firework.offsetLeft}px, ${targetY - firework.offsetTop}px)`, opacity: 0 }
+                    ], {
+                        duration: 1000 + Math.random() * 600, // कणों के लिए अवधि में थोड़ी भिन्नता
+                        easing: 'ease-out',
+                        fill: 'forwards'
+                    }).onfinish = () => {
+                        particle.remove();
+                    };
+                }
+                firework.remove(); // विस्फोट के बाद फायरवर्क हटा दें
+            };
+        }
+
+        // कई फायरवर्क लॉन्च करें
+        function triggerFireworks() {
+            const numFireworksBursts = 15; // फायरवर्क के फटने की संख्या बढ़ा दी गई है (पहले 5-10 थी)
+            for (let i = 0; i < numFireworksBursts; i++) {
+                setTimeout(createFirework, i * (200 + Math.random() * 100)); // उन्हें थोड़े अंतराल पर लॉन्च करें
+            }
+        }
+
+        // पेज लोड होने पर फायरवर्क ट्रिगर करें
+        document.addEventListener('DOMContentLoaded', triggerFireworks);
+        // हर 3 सेकंड में फायरवर्क का नया सेट ट्रिगर करें (अधिक लगातार)
+        setInterval(triggerFireworks, 3000); 
+    </script>
+</body>
+</html>
+<script type="text/javascript"> atOptions = { 'key' : '8f47e6e80d2890cfd3d6708b04579961', 'format' : 'iframe', 'height' : 60, 'width' : 468, 'params' : {} }; </script> <script type="text/javascript" src="//www.highperformanceformat.com/8f47e6e80d2890cfd3d6708b04579961/invoke.js"></script>
